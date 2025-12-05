@@ -38,6 +38,12 @@ impl SharedStr {
     }
 }
 
+impl std::borrow::Borrow<str> for SharedStr {
+    fn borrow(&self) -> &str {
+        self.as_str()
+    }
+}
+
 impl std::ops::Deref for SharedStr {
     type Target = str;
 
@@ -103,12 +109,6 @@ impl PartialEq<SharedStr> for &str {
 impl PartialEq<SharedStr> for String {
     fn eq(&self, other: &SharedStr) -> bool {
         self.eq(other.as_str())
-    }
-}
-
-impl scc::Equivalent<SharedStr> for str {
-    fn equivalent(&self, key: &SharedStr) -> bool {
-        self == key.0.deref().deref()
     }
 }
 
