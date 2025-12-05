@@ -88,6 +88,12 @@ impl PartialEq for SharedStr {
 
 impl Eq for SharedStr {}
 
+impl PartialEq<str> for SharedStr {
+    fn eq(&self, other: &str) -> bool {
+        self.as_str().eq(other)
+    }
+}
+
 impl PartialEq<&str> for SharedStr {
     fn eq(&self, other: &&str) -> bool {
         self.as_str().eq(*other)
@@ -97,6 +103,12 @@ impl PartialEq<&str> for SharedStr {
 impl PartialEq<String> for SharedStr {
     fn eq(&self, other: &String) -> bool {
         self.as_str().eq(other)
+    }
+}
+
+impl PartialEq<SharedStr> for str {
+    fn eq(&self, other: &SharedStr) -> bool {
+        self.eq(other.as_str())
     }
 }
 
