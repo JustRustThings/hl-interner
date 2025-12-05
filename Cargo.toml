@@ -4,3 +4,5 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+foldhash = "0.2.0"
+scc2 = "2.4.4"
