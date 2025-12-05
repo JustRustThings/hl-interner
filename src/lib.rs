@@ -82,6 +82,30 @@ impl PartialEq for SharedStr {
 
 impl Eq for SharedStr {}
 
+impl PartialEq<&str> for SharedStr {
+    fn eq(&self, other: &&str) -> bool {
+        self.as_str().eq(*other)
+    }
+}
+
+impl PartialEq<String> for SharedStr {
+    fn eq(&self, other: &String) -> bool {
+        self.as_str().eq(other)
+    }
+}
+
+impl PartialEq<SharedStr> for &str {
+    fn eq(&self, other: &SharedStr) -> bool {
+        (*self).eq(other.as_str())
+    }
+}
+
+impl PartialEq<SharedStr> for String {
+    fn eq(&self, other: &SharedStr) -> bool {
+        self.eq(other.as_str())
+    }
+}
+
 impl scc::Equivalent<SharedStr> for str {
     fn equivalent(&self, key: &SharedStr) -> bool {
         self == key.0.deref().deref()
