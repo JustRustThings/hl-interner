@@ -5,4 +5,4 @@ edition = "2024"
 
 [dependencies]
 foldhash = "0.2.0"
-scc2 = "2.4.4"
+scc = "3.4.2"

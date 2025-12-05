@@ -7,24 +7,24 @@ use std::sync::Arc;
 pub static STR_INTERNER: StrInterner = StrInterner::new();
 
 pub struct StrInterner {
-    pool: scc2::HashSet<SharedStr, foldhash::fast::FixedState>,
+    pool: scc::HashSet<SharedStr, foldhash::fast::FixedState>,
 }
 
 impl StrInterner {
     const fn new() -> Self {
         Self {
-            pool: scc2::HashSet::with_hasher(foldhash::fast::FixedState::with_seed(0)),
+            pool: scc::HashSet::with_hasher(foldhash::fast::FixedState::with_seed(0)),
         }
     }
 
     pub fn get<S: AsStr>(&self, text: S) -> SharedStr {
-        if let Some(s) = self.pool.read(text.as_ref(), |s| s.clone()) {
+        if let Some(s) = self.pool.read_sync(text.as_ref(), |s| s.clone()) {
             return s;
         }
         let val = text.to_owned();
         let val = val.into_boxed_str();
         let s = SharedStr(Arc::new(val));
-        let _res = self.pool.insert(s.clone());
+        let _res = self.pool.insert_sync(s.clone());
         s
     }
 }
@@ -51,7 +51,7 @@ impl Drop for SharedStr {
         // this one + the one in the interner => this is the last usage
         if Arc::strong_count(&self.0) == 2 {
             // no atomic sync => at worst a shared string will be detached from the pool
-            STR_INTERNER.pool.remove(self);
+            STR_INTERNER.pool.remove_sync(self);
         }
     }
 }
@@ -82,7 +82,7 @@ impl PartialEq for SharedStr {
 
 impl Eq for SharedStr {}
 
-impl scc2::Equivalent<SharedStr> for str {
+impl scc::Equivalent<SharedStr> for str {
     fn equivalent(&self, key: &SharedStr) -> bool {
         self == key.0.deref().deref()
     }
