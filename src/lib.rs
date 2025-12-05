@@ -116,3 +116,22 @@ impl From<String> for SharedStr {
         STR_INTERNER.get(value)
     }
 }
+
+impl serde::Serialize for SharedStr {
+    fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: serde::Serializer,
+    {
+        self.as_str().serialize(serializer)
+    }
+}
+
+impl<'de> serde::Deserialize<'de> for SharedStr {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        let txt = String::deserialize(deserializer)?;
+        Ok(txt.into())
+    }
+}
